@@ -73,6 +73,17 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 		
 		// the actual search
         // TODO: Fill this in.
+        Node current = root;
+        while (current != null) {
+        	if (k.compareTo(current.key) < 0) {
+        		current = current.left;
+        	} else if (k.compareTo(current.key) > 0) {
+        		current = current.right;
+        	} else {
+        		return current;
+        	}
+        }
+
         return null;
 	}
 
@@ -92,6 +103,20 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	@Override
 	public boolean containsValue(Object target) {
+		return containsHelper(root, target);
+	}
+
+	private boolean containsHelper(Node current, Object target) {
+		if (current == null) {
+			return false;
+		}
+		if (equals(current.value, target)) {
+			return true;
+		} else if (containsHelper(current.left, target)) {
+			return true;
+		} else if (containsHelper(current.right, target)) {
+			return true;
+		}
 		return false;
 	}
 
@@ -118,6 +143,16 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 	public Set<K> keySet() {
 		Set<K> set = new LinkedHashSet<K>();
         // TODO: Fill this in.
+        return add(root, set);
+	}
+
+	private Set<K> add(Node current, Set<K> set) {
+		if (current == null) {
+			return null;
+		}
+		add(current.left, set);
+		set.add(current.key);
+		add(current.right, set);
 		return set;
 	}
 
@@ -136,7 +171,30 @@ public class MyTreeMap<K, V> implements Map<K, V> {
 
 	private V putHelper(Node node, K key, V value) {
         // TODO: Fill this in.
-        return null;
+		Comparable<? super K> k = (Comparable<? super K>) key;
+		if (k.compareTo(node.key) == 0) {
+			V old = node.value;
+			node.value = value;
+			return old;
+		} else if (k.compareTo(node.key) < 0) {
+			if (node.left == null) {
+				Node newNode = new Node(key, value);
+				node.left = newNode;
+				size ++;
+				return null;
+			} else {
+				return putHelper(node.left, key, value);
+			}
+		} else {
+			if (node.right == null) {
+				Node newNode = new Node(key, value);
+				node.right = newNode;
+				size ++;
+				return null;
+			} else {
+				return putHelper(node.right, key, value);
+			}
+		}
 	}
 
 	@Override
